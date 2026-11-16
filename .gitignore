@@ -1,0 +1,28 @@
+# Dependencies
+node_modules/
+
+# Private environment files
+.env
+.env.*
+!.env.example
+
+# Uploaded documents
+uploads/*
+!uploads/.gitkeep
+
+# Database backups
+backups/
+dump/
+*.bson
+*.archive
+
+# Logs
+logs/
+*.log
+
+# Test coverage
+coverage/
+
+# Operating system files
+.DS_Store
+Thumbs.db

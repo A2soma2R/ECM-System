@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <!-- ===== Page Settings ===== -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Login | ECM</title>
+
+  <!-- ===== Stylesheets ===== -->
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/login.css">
+
+  <!-- ===== Interface Preferences ===== -->
+  <link rel="stylesheet" href="/css/preferences.css">
+  <script src="/js/preferences.js"></script>
+
+  <!-- ===== Scripts ===== -->
+  <script src="/js/login.js" defer></script>
+</head>
+
+<body class="login-page">
+  <main class="login-card">
+
+    <!-- ===== Login Header ===== -->
+    <header class="login-header">
+      <div class="brand-mark" aria-hidden="true">ECM</div>
+
+      <p class="eyebrow">Enterprise Content Management</p>
+
+      <h1>Welcome back</h1>
+
+      <p class="login-description">
+        Sign in to access your files and folders.
+      </p>
+    </header>
+
+    <!-- ===== Login Form ===== -->
+    <form
+      id="loginForm"
+      action="/api/auth/login"
+      method="post"
+      novalidate
+    >
+      <!-- ===== Email Field ===== -->
+      <div class="form-group">
+        <label for="email">Email address</label>
+
+        <input
+          type="email"
+          id="email"
+          name="email"
+          placeholder="Enter your email address"
+          autocomplete="username"
+          aria-describedby="loginMessage"
+          required
+        >
+      </div>
+
+      <!-- ===== Password Field ===== -->
+      <div class="form-group">
+        <label for="password">Password</label>
+
+        <div class="password-field">
+          <input
+            type="password"
+            id="password"
+            name="password"
+            placeholder="Enter your password"
+            autocomplete="current-password"
+            aria-describedby="loginMessage"
+            required
+          >
+
+          <!-- ===== Password Visibility Toggle ===== -->
+          <button
+            type="button"
+            id="togglePasswordButton"
+            class="password-toggle"
+            aria-label="Show password"
+            aria-controls="password"
+            title="Show password"
+          >
+            <svg
+              width="22"
+              height="22"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+              focusable="false"
+            >
+              <path
+                d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"
+              ></path>
+              <circle cx="12" cy="12" r="3"></circle>
+              <path
+                id="passwordVisibilitySlash"
+                d="M3 3 21 21"
+                hidden
+              ></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- ===== Login Message ===== -->
+      <p
+        id="loginMessage"
+        class="form-message"
+        role="status"
+        aria-live="polite"
+        hidden
+      ></p>
+
+      <!-- ===== Login Button ===== -->
+      <button type="submit" id="loginButton" disabled>
+        Sign in
+      </button>
+    </form>
+
+    <!-- ===== Page Footer ===== -->
+    <footer class="login-footer">
+      King Fahd Glorious Quran Printing Complex
+    </footer>
+
+  </main>
+</body>
+</html>

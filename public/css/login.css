@@ -1,0 +1,53 @@
+/* ===== Password Field ===== */
+.password-field {
+  position: relative;
+  min-width: 0;
+}
+
+.password-field #password {
+  padding-inline-end: 56px;
+}
+
+/* ===== Password Visibility Toggle ===== */
+.password-field .password-toggle {
+  position: absolute;
+  inset-inline-end: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  min-height: 44px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.password-field .password-toggle:hover {
+  background: var(--page-background);
+  color: var(--primary);
+}
+
+.password-field .password-toggle:focus-visible {
+  outline: 3px solid var(--focus-ring);
+  outline-offset: 1px;
+}
+
+.password-toggle svg {
+  pointer-events: none;
+}
+
+#passwordVisibilitySlash[hidden] {
+  display: none;
+}
+
+/* ===== Browser Password Toggle ===== */
+#password::-ms-reveal,
+#password::-ms-clear {
+  display: none;
+}

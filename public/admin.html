@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <!-- ===== Page Settings ===== -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Admin Dashboard | ECM</title>
+
+  <!-- ===== Stylesheets ===== -->
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/files.css">
+  <link rel="stylesheet" href="/css/admin.css">
+
+  <!-- ===== Interface Preferences ===== -->
+  <link rel="stylesheet" href="/css/preferences.css">
+  <script src="/js/preferences.js"></script>
+
+  <!-- ===== Scripts ===== -->
+  <script src="/js/admin.js" defer></script>
+</head>
+
+<body class="files-page admin-page">
+  <!-- ===== Protected Content ===== -->
+  <div id="protectedContent" hidden>
+
+    <!-- ===== Page Header ===== -->
+    <header class="app-header">
+      <a class="app-brand" href="/files.html">ECM</a>
+
+      <div class="user-menu">
+        <a class="navigation-link" href="/files.html">My files</a>
+        <span id="userName"></span>
+
+        <button type="button" id="logoutButton">
+          Sign out
+        </button>
+      </div>
+    </header>
+
+    <main class="app-main">
+      <!-- ===== Page Heading ===== -->
+      <section class="page-heading">
+        <h1>Admin dashboard</h1>
+        <p>View system statistics and manage employee accounts.</p>
+      </section>
+
+      <!-- ===== Page Message ===== -->
+      <p
+        id="pageMessage"
+        class="form-message"
+        role="status"
+        aria-live="polite"
+        hidden
+      ></p>
+
+      <!-- ===== System Statistics ===== -->
+      <section
+        class="content-card full-width-card"
+        aria-labelledby="statisticsHeading"
+      >
+        <div class="section-header">
+          <h2 id="statisticsHeading">System statistics</h2>
+
+          <button
+            type="button"
+            id="refreshDashboardButton"
+            class="secondary-button"
+          >
+            Refresh
+          </button>
+        </div>
+
+        <p id="statisticsStatus" role="status" aria-live="polite">
+          Loading statistics...
+        </p>
+
+        <div class="statistics-grid">
+          <div class="statistic-card">
+            <span class="statistic-label">Total users</span>
+            <strong id="totalUsers">—</strong>
+          </div>
+
+          <div class="statistic-card">
+            <span class="statistic-label">Active users</span>
+            <strong id="activeUsers">—</strong>
+          </div>
+
+          <div class="statistic-card">
+            <span class="statistic-label">Inactive users</span>
+            <strong id="inactiveUsers">—</strong>
+          </div>
+
+          <div class="statistic-card">
+            <span class="statistic-label">Total files</span>
+            <strong id="totalFiles">—</strong>
+          </div>
+
+          <div class="statistic-card">
+            <span class="statistic-label">Total folders</span>
+            <strong id="totalFolders">—</strong>
+          </div>
+
+          <div class="statistic-card">
+            <span class="statistic-label">Total file size</span>
+            <strong id="totalStorage">—</strong>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== Users Management ===== -->
+      <section
+        class="content-card full-width-card"
+        aria-labelledby="usersHeading"
+      >
+        <h2 id="usersHeading">Users</h2>
+
+        <p class="section-description">
+          Activate or deactivate employee accounts.
+          Deactivating an account keeps its files and folders.
+          Admin account status cannot be changed here.
+        </p>
+
+        <p id="usersStatus" role="status" aria-live="polite">
+          Loading users...
+        </p>
+
+        <div class="table-wrapper">
+          <table class="users-table">
+            <caption class="visually-hidden">
+              System users and account status controls
+            </caption>
+
+            <thead>
+              <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Email</th>
+                <th scope="col">Role</th>
+                <th scope="col">Status</th>
+                <th scope="col">Actions</th>
+              </tr>
+            </thead>
+
+            <tbody id="usersTableBody"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <!-- ===== Page Footer ===== -->
+    <footer class="app-footer">
+      <div>Enterprise Content Management</div>
+      <div>King Fahd Glorious Quran Printing Complex</div>
+    </footer>
+  </div>
+
+  <!-- ===== Account Status Dialog ===== -->
+  <dialog
+    id="statusDialog"
+    class="action-dialog"
+    aria-labelledby="statusDialogTitle"
+    aria-describedby="statusDialogDescription"
+  >
+    <form id="statusDialogForm">
+      <h2 id="statusDialogTitle">Update account status</h2>
+
+      <p id="statusDialogDescription"></p>
+
+      <p
+        id="statusDialogError"
+        class="form-message error"
+        role="alert"
+        hidden
+      ></p>
+
+      <div class="dialog-actions">
+        <button
+          type="button"
+          id="cancelStatusButton"
+          class="secondary-button"
+        >
+          Cancel
+        </button>
+
+        <button type="submit" id="confirmStatusButton">
+          Confirm
+        </button>
+      </div>
+    </form>
+  </dialog>
+</body>
+</html>

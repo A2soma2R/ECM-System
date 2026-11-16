@@ -1,0 +1,66 @@
+/* ===== Shared Theme Preferences ===== */
+:root { color-scheme: light; }
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --primary: #278568;
+  --primary-hover: #216f58;
+  --page-background: #111b18;
+  --card-background: #1b2923;
+  --text: #edf5f0;
+  --muted: #b6c6bd;
+  --border: #41564a;
+  --focus-ring: #72bfa0;
+  --error-background: #422727;
+  --error-text: #ffb7b0;
+  --success-background: #193e2e;
+  --success-text: #9cdbb7;
+}
+:root[data-theme="dark"] .app-brand,
+:root[data-theme="dark"] .eyebrow,
+:root[data-theme="dark"] .navigation-link,
+:root[data-theme="dark"] #adminDashboardLink,
+:root[data-theme="dark"] .statistic-card strong { color: #8fd8b9; }
+:root[data-theme="dark"] .files-page .danger-button { border-color: #784a45; }
+:root[data-theme="dark"] .files-page .danger-button:hover:not(:disabled) { background: #59302f; }
+.form-group input::placeholder { color: var(--muted); opacity: 1; }
+
+/* ===== Preference Controls ===== */
+.preferences-bar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 10px;
+  width: min(1120px, calc(100% - 48px));
+  margin: 16px auto;
+}
+.login-card .preferences-bar { width: 100%; margin: 0 0 24px; }
+.preferences-bar select,
+.preferences-bar button {
+  width: auto;
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--card-background);
+  color: var(--text);
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+.preferences-bar button:hover { background: var(--page-background); }
+.preferences-bar :focus-visible {
+  outline: 3px solid var(--focus-ring);
+  outline-offset: 3px;
+}
+
+/* ===== Reading Direction ===== */
+.files-table { text-align: start; }
+:root[dir="rtl"] body { font-family: "Segoe UI", Tahoma, Arial, sans-serif; }
+input[type="email"] { direction: ltr; text-align: start; }
+.owner-email,
+.share-user-email { unicode-bidi: plaintext; }
+:root[dir="rtl"] #password { direction: rtl; }
+@media (max-width: 768px) {
+  .preferences-bar { width: calc(100% - 32px); }
+}

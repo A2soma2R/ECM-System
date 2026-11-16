@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <!-- ===== Page Settings ===== -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>My Files | ECM</title>
+
+  <!-- ===== Stylesheets ===== -->
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/files.css">
+
+  <!-- ===== Interface Preferences ===== -->
+  <link rel="stylesheet" href="/css/preferences.css">
+  <script src="/js/preferences.js"></script>
+
+  <!-- ===== Scripts ===== -->
+  <script src="/js/files.js" defer></script>
+</head>
+
+<body class="files-page">
+  <!-- ===== Protected Content ===== -->
+  <div id="protectedContent" hidden>
+
+    <!-- ===== Page Header ===== -->
+    <header class="app-header">
+      <a class="app-brand" href="/files.html">ECM</a>
+
+      <div class="user-menu">
+        <!-- ===== Admin Dashboard Link ===== -->
+        <a
+          id="adminDashboardLink"
+          class="navigation-link"
+          href="/admin.html"
+          hidden
+        >
+          Admin dashboard
+        </a>
+
+        <span id="userName"></span>
+
+        <!-- ===== Logout Button ===== -->
+        <button type="button" id="logoutButton">
+          Sign out
+        </button>
+      </div>
+    </header>
+
+    <main class="app-main">
+      <!-- ===== Page Title ===== -->
+      <section class="page-heading">
+        <h1>My files</h1>
+        <p>Upload, organize, and manage your documents.</p>
+      </section>
+
+      <!-- ===== Page Message ===== -->
+      <p
+        id="pageMessage"
+        class="form-message"
+        role="status"
+        aria-live="polite"
+        hidden
+      ></p>
+
+      <!-- ===== Folders Section ===== -->
+      <section class="content-card" aria-labelledby="foldersHeading">
+        <h2 id="foldersHeading">Folders</h2>
+
+        <!-- ===== Create Folder Form ===== -->
+        <form id="createFolderForm" novalidate>
+          <div class="form-group">
+            <label for="folderName">New folder name</label>
+
+            <input
+              type="text"
+              id="folderName"
+              name="name"
+              placeholder="Enter a folder name"
+              required
+            >
+          </div>
+
+          <button type="submit" id="createFolderButton">
+            Create folder
+          </button>
+        </form>
+
+        <!-- ===== Folders List ===== -->
+        <ul id="foldersList" class="folders-list"></ul>
+      </section>
+
+      <!-- ===== File Upload ===== -->
+      <section class="content-card" aria-labelledby="uploadHeading">
+        <h2 id="uploadHeading">Upload a file</h2>
+
+        <form id="uploadFileForm" novalidate>
+          <div class="form-group">
+            <label for="uploadFolder">Folder</label>
+
+            <select id="uploadFolder" name="folderId" required>
+              <option value="">Select a folder</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="uploadCategory">Category</label>
+
+            <input
+              type="text"
+              id="uploadCategory"
+              name="category"
+              placeholder="General"
+            >
+          </div>
+
+          <!-- ===== File Picker ===== -->
+          <div class="form-group">
+            <label for="chooseFileButton">File</label>
+
+            <input
+              type="file"
+              id="uploadFile"
+              name="file"
+              accept=".pdf,.docx,.xlsx,.pptx,.txt,.png,.jpg,.jpeg"
+              hidden
+            >
+
+            <div class="file-picker">
+              <button
+                type="button"
+                id="chooseFileButton"
+                class="secondary-button"
+                aria-describedby="selectedFileName uploadHelp"
+              >
+                Choose file
+              </button>
+
+              <span
+                id="selectedFileName"
+                class="selected-file-name"
+                aria-live="polite"
+              >
+                No file selected
+              </span>
+            </div>
+
+            <small id="uploadHelp">
+              PDF, DOCX, XLSX, PPTX, TXT, PNG, JPG, or JPEG.
+              Maximum file size: 10 MB.
+            </small>
+          </div>
+
+          <button type="submit" id="uploadFileButton">
+            Upload file
+          </button>
+        </form>
+      </section>
+
+      <!-- ===== My Files Section ===== -->
+      <section
+        class="content-card full-width-card"
+        aria-labelledby="filesHeading"
+      >
+        <h2 id="filesHeading">My files</h2>
+
+        <!-- ===== Search Bar ===== -->
+        <form id="searchForm" novalidate>
+          <div class="form-group">
+            <label for="searchInput">Search text</label>
+
+            <input
+              type="search"
+              id="searchInput"
+              name="search"
+              placeholder="Enter a file name or words from a document"
+              maxlength="200"
+            >
+          </div>
+
+          <!-- ===== Search Scope ===== -->
+          <div class="form-group">
+            <label for="searchScope">Search in</label>
+            <select id="searchScope" name="scope" aria-describedby="contentSearchHelp">
+              <option value="name">File name</option>
+              <option value="content">File content</option>
+              <option value="all">File name and content</option>
+            </select>
+          </div>
+
+          <!-- ===== Category Filter ===== -->
+          <div class="form-group">
+            <label for="categoryFilter">Category</label>
+
+            <input
+              type="text"
+              id="categoryFilter"
+              name="category"
+              placeholder="All categories"
+            >
+          </div>
+
+          <!-- ===== Folder Filter ===== -->
+          <div class="form-group">
+            <label for="folderFilter">Folder</label>
+
+            <select id="folderFilter" name="folderId">
+              <option value="">All folders</option>
+            </select>
+          </div>
+
+          <!-- ===== Search Buttons ===== -->
+          <div class="search-actions">
+            <button type="submit" id="searchButton">
+              Search
+            </button>
+
+            <button type="button" id="clearSearchButton">
+              Clear
+            </button>
+          </div>
+        </form>
+
+        <p id="contentSearchHelp" class="section-description content-search-help">
+          Content search supports TXT and text-based PDF files in My files.
+          Scanned PDFs and other formats can still be found by file name.
+          Up to 500,000 extracted characters per file are searchable.
+        </p>
+
+        <!-- ===== My Files List ===== -->
+        <p id="filesStatus" role="status" aria-live="polite"></p>
+
+        <div class="table-wrapper">
+          <table class="files-table">
+            <caption class="visually-hidden">
+              Your files and available actions
+            </caption>
+
+            <thead>
+              <tr>
+                <th scope="col">File name</th>
+                <th scope="col">Folder</th>
+                <th scope="col">Category</th>
+                <th scope="col">Size</th>
+                <th scope="col">Actions</th>
+              </tr>
+            </thead>
+
+            <tbody id="filesTableBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ===== Shared With Me ===== -->
+      <section
+        class="content-card full-width-card"
+        aria-labelledby="sharedFilesHeading"
+      >
+        <div class="section-header">
+          <h2 id="sharedFilesHeading">Shared with me</h2>
+
+          <button
+            type="button"
+            id="refreshSharedButton"
+            class="secondary-button"
+          >
+            Refresh
+          </button>
+        </div>
+
+        <p class="section-description">
+          Files other users have shared with you.
+          Available actions depend on your permission.
+        </p>
+
+        <!-- ===== Shared Files Status ===== -->
+        <p
+          id="sharedFilesStatus"
+          role="status"
+          aria-live="polite"
+        ></p>
+
+        <!-- ===== Shared Files List ===== -->
+        <div class="table-wrapper">
+          <table class="files-table">
+            <caption class="visually-hidden">
+              Files shared with you and available actions
+            </caption>
+
+            <thead>
+              <tr>
+                <th scope="col">File name</th>
+                <th scope="col">Owner</th>
+                <th scope="col">Category</th>
+                <th scope="col">Size</th>
+                <th scope="col">Permission</th>
+                <th scope="col">Actions</th>
+              </tr>
+            </thead>
+
+            <tbody id="sharedFilesTableBody"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <!-- ===== Page Footer ===== -->
+    <footer class="app-footer">
+      <div>Enterprise Content Management</div>
+      <div>King Fahd Glorious Quran Printing Complex</div>
+    </footer>
+  </div>
+
+  <!-- ===== Action Dialog ===== -->
+  <dialog
+    id="actionDialog"
+    class="action-dialog"
+    aria-labelledby="dialogTitle"
+    aria-describedby="dialogDescription"
+  >
+    <form id="dialogForm" novalidate>
+      <h2 id="dialogTitle">Update item</h2>
+      <p id="dialogDescription"></p>
+
+      <!-- ===== Dialog Input ===== -->
+      <div id="dialogInputGroup" class="form-group">
+        <label id="dialogInputLabel" for="dialogInput">
+          Name
+        </label>
+
+        <input
+          type="text"
+          id="dialogInput"
+          aria-describedby="dialogError"
+        >
+      </div>
+
+      <!-- ===== Dialog Error ===== -->
+      <p
+        id="dialogError"
+        class="form-message error"
+        role="alert"
+        hidden
+      ></p>
+
+      <!-- ===== Dialog Buttons ===== -->
+      <div class="dialog-actions">
+        <button
+          type="button"
+          id="dialogCancelButton"
+          class="secondary-button"
+        >
+          Cancel
+        </button>
+
+        <button type="submit" id="dialogConfirmButton">
+          Save
+        </button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- ===== File Sharing Dialog ===== -->
+  <dialog
+    id="sharingDialog"
+    class="action-dialog sharing-dialog"
+    aria-labelledby="sharingTitle"
+    aria-describedby="sharingFileName"
+  >
+    <div class="sharing-content">
+      <h2 id="sharingTitle">Share file</h2>
+      <p id="sharingFileName"></p>
+
+      <!-- ===== Sharing Message ===== -->
+      <p
+        id="sharingMessage"
+        class="form-message"
+        role="status"
+        aria-live="polite"
+        hidden
+      ></p>
+
+      <!-- ===== Share File Form ===== -->
+      <form id="shareFileForm" novalidate>
+        <div class="form-group">
+          <label for="shareEmail">User email address</label>
+
+          <input
+            type="email"
+            id="shareEmail"
+            name="email"
+            placeholder="Enter the user's email address"
+            aria-describedby="sharingMessage"
+            required
+          >
+        </div>
+
+        <!-- ===== Sharing Permission ===== -->
+        <div class="form-group">
+          <label for="sharePermission">Permission</label>
+
+          <select
+            id="sharePermission"
+            name="permission"
+            aria-describedby="sharingPermissionHelp"
+          >
+            <option value="view">View and download</option>
+            <option value="edit">Download and edit category</option>
+          </select>
+
+          <small id="sharingPermissionHelp">
+            Only the owner can delete this file or manage sharing.
+          </small>
+        </div>
+
+        <button type="submit" id="saveShareButton">
+          Save sharing
+        </button>
+      </form>
+
+      <!-- ===== Current File Sharing ===== -->
+      <section aria-labelledby="currentSharesHeading">
+        <h3 id="currentSharesHeading">Shared with</h3>
+
+        <p
+          id="sharesStatus"
+          role="status"
+          aria-live="polite"
+        ></p>
+
+        <ul id="sharesList" class="shares-list"></ul>
+      </section>
+
+      <!-- ===== Close Sharing Dialog ===== -->
+      <div class="dialog-actions">
+        <button
+          type="button"
+          id="closeSharingButton"
+          class="secondary-button"
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  </dialog>
+</body>
+</html>

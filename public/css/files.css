@@ -1,0 +1,518 @@
+/* ===== Files Page ===== */
+.files-page,
+#protectedContent {
+  min-height: 100vh;
+}
+
+/* ===== Page Header ===== */
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 18px max(24px, calc((100% - 1120px) / 2));
+  border-bottom: 1px solid var(--border);
+  background: var(--card-background);
+}
+.app-brand {
+  color: var(--primary);
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-decoration: none;
+}
+.user-menu {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+#userName {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* ===== Admin Dashboard Link ===== */
+#adminDashboardLink {
+  color: var(--primary);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+}
+#adminDashboardLink:hover {
+  text-decoration: underline;
+}
+#adminDashboardLink:focus-visible {
+  outline: 3px solid var(--focus-ring);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* ===== Main Layout ===== */
+.app-main {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  width: min(1120px, calc(100% - 48px));
+  margin: 36px auto;
+}
+.page-heading,
+#pageMessage,
+.full-width-card,
+.content-card:has(#filesHeading),
+.content-card:has(#sharedFilesHeading) {
+  grid-column: 1 / -1;
+}
+
+/* ===== Page Title ===== */
+.page-heading h1 {
+  margin: 0 0 6px;
+  font-size: 32px;
+  line-height: 1.25;
+}
+.page-heading p {
+  margin: 0;
+  color: var(--muted);
+}
+
+/* ===== Content Cards ===== */
+.content-card {
+  min-width: 0;
+  padding: 28px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--card-background);
+}
+.content-card h2 {
+  margin: 0 0 24px;
+  font-size: 20px;
+}
+
+/* ===== Section Header ===== */
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.section-header h2 {
+  margin: 0;
+}
+.section-description {
+  margin: 0;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* ===== Form Controls ===== */
+.files-page input,
+.files-page select,
+.files-page button {
+  font: inherit;
+}
+.files-page select {
+  width: 100%;
+  min-height: 48px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--card-background);
+  color: var(--text);
+}
+.files-page input:focus-visible,
+.files-page select:focus-visible,
+.files-page button:focus-visible,
+.app-brand:focus-visible {
+  outline: 3px solid var(--focus-ring);
+  outline-offset: 3px;
+}
+.files-page small {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+/* ===== Buttons ===== */
+.files-page button {
+  min-height: 44px;
+  padding: 10px 16px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: var(--primary);
+  color: #ffffff;
+  font-weight: 600;
+  cursor: pointer;
+}
+.files-page button:hover:not(:disabled) {
+  background: var(--primary-hover);
+}
+.files-page button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+#logoutButton,
+#clearSearchButton,
+.files-page .secondary-button {
+  border-color: var(--border);
+  background: var(--card-background);
+  color: var(--text);
+}
+#logoutButton:hover:not(:disabled),
+#clearSearchButton:hover:not(:disabled),
+.files-page .secondary-button:hover:not(:disabled) {
+  background: var(--page-background);
+}
+.files-page .danger-button {
+  border-color: #f0ccc9;
+  background: var(--error-background);
+  color: var(--error-text);
+}
+.files-page .danger-button:hover:not(:disabled) {
+  background: #ffe1de;
+}
+
+/* ===== Create Folder Form ===== */
+#createFolderForm {
+  display: grid;
+  gap: 16px;
+}
+
+/* ===== Folders List ===== */
+.folders-list {
+  display: grid;
+  gap: 12px;
+  margin: 24px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.folder-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+.folder-name {
+  min-width: 0;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+.folder-actions,
+.file-actions,
+.share-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.folder-actions button,
+.file-actions button,
+.share-actions button {
+  min-height: 36px;
+  padding: 6px 10px;
+  font-size: 12px;
+}
+
+/* ===== File Upload ===== */
+#uploadFileForm {
+  display: grid;
+  gap: 16px;
+}
+
+/* ===== File Picker ===== */
+.file-picker {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  min-height: 48px;
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--card-background);
+}
+#chooseFileButton {
+  flex-shrink: 0;
+  min-height: 36px;
+  padding: 6px 10px;
+  font-size: 13px;
+}
+.selected-file-name {
+  min-width: 0;
+  color: var(--muted);
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+
+/* ===== Search Bar ===== */
+#searchForm {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 16px;
+  align-items: end;
+}
+.search-actions {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+/* ===== Files Status ===== */
+#filesStatus,
+#sharedFilesStatus {
+  margin: 24px 0 12px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+/* ===== Files Tables ===== */
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+.files-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+.files-table th,
+.files-table td {
+  padding: 16px 12px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+.files-table th {
+  background: var(--page-background);
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.files-table td {
+  font-size: 14px;
+}
+.files-table td:first-child {
+  min-width: 200px;
+  max-width: 320px;
+  overflow-wrap: anywhere;
+}
+.files-table td:last-child {
+  min-width: 230px;
+}
+
+/* ===== Shared File Owner ===== */
+.owner-name {
+  display: block;
+  font-weight: 600;
+}
+.owner-email {
+  display: block;
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+
+/* ===== Permission Badge ===== */
+.permission-badge {
+  display: inline-block;
+  padding: 5px 9px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--page-background);
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* ===== Action Dialog ===== */
+.action-dialog {
+  width: min(440px, calc(100% - 32px));
+  max-height: calc(100dvh - 32px);
+  margin: auto;
+  padding: 28px;
+  overflow-y: auto;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--card-background);
+  color: var(--text);
+  box-shadow: 0 20px 60px rgb(0 0 0 / 20%);
+}
+.action-dialog::backdrop {
+  background: rgb(0 0 0 / 45%);
+}
+body:has(.action-dialog[open]) {
+  overflow: hidden;
+}
+#dialogForm {
+  display: grid;
+  gap: 20px;
+}
+#dialogTitle,
+#sharingTitle {
+  margin: 0;
+  font-size: 22px;
+  line-height: 1.3;
+}
+#dialogDescription {
+  margin: 0;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+#dialogInputGroup {
+  min-width: 0;
+}
+#dialogError {
+  margin: 0;
+}
+
+/* ===== Dialog Buttons ===== */
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.dialog-actions button {
+  min-width: 90px;
+}
+
+/* ===== Sharing Dialog ===== */
+.sharing-dialog {
+  width: min(560px, calc(100% - 32px));
+}
+.sharing-content {
+  display: grid;
+  gap: 20px;
+}
+#sharingFileName {
+  margin: 0;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+#sharingMessage {
+  margin: 0;
+}
+#shareFileForm {
+  display: grid;
+  gap: 16px;
+}
+#currentSharesHeading {
+  margin: 0 0 12px;
+  font-size: 16px;
+}
+#sharesStatus {
+  margin: 0 0 12px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+/* ===== Sharing List ===== */
+.shares-list {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.share-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+.share-user {
+  min-width: 0;
+}
+.share-user-name {
+  display: block;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+.share-user-email {
+  display: block;
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+.share-user .permission-badge {
+  margin-top: 8px;
+}
+
+/* ===== Accessibility ===== */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ===== Page Footer ===== */
+.app-footer {
+  padding: 24px;
+  color: var(--muted);
+  font-size: 12px;
+  text-align: center;
+  line-height: 1.8;
+}
+
+/* ===== Mobile Layout ===== */
+@media (max-width: 768px) {
+  .app-header {
+    padding: 16px 20px;
+  }
+  .app-main {
+    width: calc(100% - 32px);
+    margin: 24px auto;
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .content-card {
+    padding: 20px;
+  }
+  #searchForm {
+    grid-template-columns: 1fr;
+  }
+  .folder-item,
+  .share-item {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .user-menu {
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+  #userName {
+    max-width: 140px;
+    overflow-wrap: anywhere;
+  }
+  .page-heading h1 {
+    font-size: 28px;
+  }
+  .action-dialog {
+    padding: 24px 20px;
+  }
+}
+
+/* ===== Content Search ===== */
+#searchForm { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.content-search-help { margin-top: 20px; }
+.content-status { display: block; margin-top: 6px; line-height: 1.5; }
+@media (max-width: 768px) {
+  #searchForm { grid-template-columns: 1fr; }
+}
