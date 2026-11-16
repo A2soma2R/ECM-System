@@ -1,0 +1,282 @@
+# System Design | تصميم النظام
+
+## English
+
+### 1. Project Purpose
+
+ECM helps employees store, organize, search, and share digital documents. Administrators can manage employee account status and view system statistics.
+
+### 2. System Requirements
+
+| Requirement | Implementation |
+| --- | --- |
+| User accounts | Employee and administrator roles |
+| Authentication | Email and password login with JWT |
+| Folder management | Create, rename, and delete empty owned folders |
+| File management | Upload, download, categorize, and delete owned files |
+| Search | File name and supported document content, with folder and category filters |
+| Sharing | Share with registered active users and revoke access |
+| Permissions | Owner, view recipient, and edit recipient |
+| Administration | Statistics and employee activation controls |
+| Interface | Arabic, English, light/dark themes, and mobile layouts |
+
+### 3. Users and Permissions
+
+| User | Permissions |
+| --- | --- |
+| Employee | Manage personal files and folders |
+| File owner | Download, categorize, share, and delete the owned file |
+| View recipient | Download the shared file |
+| Edit recipient | Download and change the shared file category |
+| Administrator | Employee features, system statistics, and employee account controls |
+
+Only the owner can manage sharing or delete a file. Administrator status does not automatically grant access to other users' documents.
+
+### 4. System Architecture
+
+```mermaid
+flowchart TD
+    A["Browser: HTML, CSS, JavaScript"] --> B["Express REST API"]
+    B --> C["MongoDB: accounts and document metadata"]
+    B --> D["Private uploads directory"]
+    B --> E["Text extraction worker"]
+    E --> D
+```
+
+The browser displays the interface. The API validates requests and checks permissions. MongoDB stores records, while the uploads directory stores document bytes. The worker extracts supported document text.
+
+### 5. Database Design
+
+```mermaid
+erDiagram
+    USER ||--o{ FOLDER : owns
+    USER ||--o{ FILE : owns
+    FOLDER ||--o{ FILE : contains
+    FILE ||--o{ SHARE : embeds
+    USER ||--o{ SHARE : receives
+
+    USER {
+        ObjectId _id
+        string name
+        string email
+        string password
+        string role
+        boolean isActive
+    }
+
+    FOLDER {
+        ObjectId _id
+        string name
+        ObjectId owner
+    }
+
+    FILE {
+        ObjectId _id
+        string originalName
+        string storedName
+        string mimeType
+        number size
+        ObjectId folder
+        ObjectId owner
+        string category
+        string contentText
+        string contentIndexStatus
+        date contentIndexedAt
+    }
+
+    SHARE {
+        ObjectId user
+        string permission
+        date sharedAt
+    }
+```
+
+SHARE represents entries embedded in the File document's `sharedWith` array. It is not a separate collection.
+
+The password field stores a hash. User, Folder, and File records also have creation and update timestamps. Extracted content is excluded from ordinary file queries.
+
+### 6. Login Workflow
+
+```mermaid
+flowchart TD
+    A["Enter email and password"] --> B{"Credentials correct?"}
+    B -->|No| C["Show login error"]
+    B -->|Yes| D{"Account active?"}
+    D -->|No| E["Reject access"]
+    D -->|Yes| F["Issue JWT and open My files"]
+    F --> G{"Administrator?"}
+    G -->|Yes| H["Show dashboard link"]
+    G -->|No| I["Show employee features"]
+```
+
+Protected API requests check the token and current database account. Administrator routes also check the user's role.
+
+### 7. Upload Workflow
+
+```mermaid
+flowchart TD
+    A["Choose folder and file"] --> B["Check login and upload limits"]
+    B --> C{"Folder owned and input valid?"}
+    C -->|No| D["Reject and clean unused upload"]
+    C -->|Yes| E["Extract supported text in worker"]
+    E --> F["Save metadata and indexing status"]
+    F --> G["Display file in My files"]
+```
+
+If text extraction fails, an otherwise valid upload can still be saved and found by file name.
+
+### 8. Sharing Workflow
+
+```mermaid
+flowchart TD
+    A["Owner selects Share"] --> B["Check file ownership"]
+    B --> C{"Recipient active and permission valid?"}
+    C -->|No| D["Show error"]
+    C -->|Yes| E["Save recipient permission"]
+    E --> F["Recipient opens Shared with me"]
+    F --> G["Server checks access for each action"]
+```
+
+The owner can update or remove sharing. Revoking access prevents future authorized downloads but does not remove previously downloaded copies.
+
+### 9. Interface Design
+
+| Screen | Main elements |
+| --- | --- |
+| Login | Email, password, visibility toggle, language, and theme |
+| My files | Folders, upload form, search filters, and file actions |
+| Sharing dialog | Recipient email, permission, and current shares |
+| Shared with me | Shared documents and permitted actions |
+| Admin dashboard | Statistics and employee activation controls |
+
+Forms stack vertically on smaller screens. File tables support horizontal scrolling. Arabic uses right-to-left layout.
+
+### 10. Design Limits
+
+- Upload size is limited to 10 MB per file.
+- Content search supports owned TXT and text-based PDF files.
+- Searchable extracted content is limited to 500,000 characters per file.
+- Text extraction has a 20-second timeout.
+- Edit permission changes categories, not document contents.
+- OCR, password recovery, and malware scanning are not included.
+- File-system operations and database operations are not one transaction.
+
+---
+
+## العربية
+
+### 1. هدف المشروع
+
+يساعد ECM الموظفين على حفظ المستندات الرقمية وتنظيمها والبحث عنها ومشاركتها. يستطيع المسؤول إدارة حالة حسابات الموظفين وعرض إحصائيات النظام.
+
+### 2. متطلبات النظام
+
+| المتطلب | التنفيذ |
+| --- | --- |
+| حسابات المستخدمين | دور موظف ودور مسؤول |
+| المصادقة | الدخول بالبريد وكلمة المرور باستخدام JWT |
+| إدارة المجلدات | إنشاء المجلدات المملوكة وتغيير أسمائها وحذف الفارغ منها |
+| إدارة الملفات | رفع الملفات المملوكة وتنزيلها وتصنيفها وحذفها |
+| البحث | الاسم والمحتوى المدعوم مع فلاتر المجلد والتصنيف |
+| المشاركة | المشاركة مع مستخدم مسجّل ونشط وإلغاء وصوله |
+| الصلاحيات | مالك ومستلم بصلاحية عرض أو تعديل |
+| الإدارة | الإحصائيات وتفعيل حسابات الموظفين وتعطيلها |
+| الواجهة | العربية والإنجليزية والمظهر الفاتح والداكن ودعم الجوال |
+
+### 3. المستخدمون والصلاحيات
+
+| المستخدم | الصلاحيات |
+| --- | --- |
+| الموظف | إدارة ملفاته ومجلداته الشخصية |
+| مالك الملف | تنزيل ملفه وتصنيفه ومشاركته وحذفه |
+| مستلم بصلاحية عرض | تنزيل الملف المشارَك |
+| مستلم بصلاحية تعديل | تنزيل الملف وتغيير تصنيفه |
+| المسؤول | وظائف الموظف والإحصائيات وإدارة حالة حسابات الموظفين |
+
+المالك وحده يدير المشاركة ويحذف الملف. دور المسؤول لا يمنح تلقائيًا الوصول إلى مستندات الآخرين.
+
+### 4. بنية النظام
+
+مخطط البنية في القسم الإنجليزي يوضح:
+
+- المتصفح يعرض الواجهة باستخدام HTML وCSS وJavaScript.
+- Express يستقبل الطلبات ويتحقق من البيانات والصلاحيات.
+- MongoDB تحفظ الحسابات والمجلدات وبيانات الملفات والمشاركة.
+- مجلد uploads يحفظ المستندات نفسها خارج ملفات الواجهة العامة.
+- عامل منفصل يستخرج النص من المستندات المدعومة.
+
+### 5. تصميم قاعدة البيانات
+
+مخطط العلاقات في القسم الإنجليزي يوضح ثلاثة نماذج رئيسية:
+
+| النموذج | البيانات الرئيسية |
+| --- | --- |
+| User | الاسم والبريد وهاش كلمة المرور والدور وحالة الحساب |
+| Folder | اسم المجلد ومرجع المالك |
+| File | الاسم والحجم والنوع والمالك والمجلد والتصنيف والمشاركة والنص المستخرج |
+
+العلاقات:
+
+- المستخدم يستطيع امتلاك عدة مجلدات وملفات.
+- المجلد يستطيع احتواء عدة ملفات.
+- الملف يستطيع احتواء عدة مشاركات.
+- كل مشاركة تربط المستخدم بصلاحيته وتاريخ المشاركة.
+
+المشاركات محفوظة داخل مصفوفة `sharedWith` في سجل الملف، وليست مجموعة مستقلة.
+
+تحتوي النماذج الرئيسية أيضًا على تاريخ الإنشاء والتعديل. يُستبعد النص المستخرج من الاستعلامات العادية.
+
+### 6. سير تسجيل الدخول
+
+1. يدخل المستخدم البريد وكلمة المرور.
+2. يتحقق السيرفر من صحة البيانات.
+3. يتحقق من نشاط الحساب.
+4. يصدر JWT عند نجاح الدخول.
+5. تفتح صفحة ملفاتي.
+6. يظهر رابط لوحة المسؤول للحساب الذي يملك دور المسؤول.
+
+الطلبات المحمية تتحقق من التوكن والحساب الحالي في قاعدة البيانات. مسارات المسؤول تتحقق من الدور أيضًا.
+
+### 7. سير رفع الملف
+
+1. يختار المستخدم المجلد والملف.
+2. يتحقق السيرفر من الدخول وحدود الرفع.
+3. يتحقق من ملكية المجلد وصحة البيانات.
+4. يستخرج العامل النص إذا كان نوع الملف مدعومًا.
+5. تُحفظ بيانات الملف وحالة الفهرسة.
+6. يظهر الملف في صفحة ملفاتي.
+
+إذا فشل استخراج النص، يمكن حفظ الملف الصالح والبحث عنه باسمه.
+
+### 8. سير المشاركة
+
+1. يضغط المالك مشاركة.
+2. يتحقق السيرفر من ملكية الملف.
+3. يتحقق من نشاط المستلم وصحة الصلاحية.
+4. تُحفظ المشاركة.
+5. يظهر الملف لدى المستلم في قسم تمت مشاركتها معي.
+6. يتحقق السيرفر من الوصول عند تنفيذ الإجراءات.
+
+يستطيع المالك تغيير الصلاحية أو إلغاء المشاركة. إلغاء الوصول لا يحذف النسخ التي سبق تنزيلها.
+
+### 9. تصميم الواجهات
+
+| الشاشة | العناصر الرئيسية |
+| --- | --- |
+| الدخول | البريد وكلمة المرور وإظهارها واللغة والمظهر |
+| ملفاتي | المجلدات والرفع والبحث وإجراءات الملفات |
+| نافذة المشاركة | بريد المستلم والصلاحية وقائمة المشاركات |
+| تمت مشاركتها معي | المستندات المشارَكة والإجراءات المسموحة |
+| لوحة المسؤول | الإحصائيات والتحكم بحالة حسابات الموظفين |
+
+تُرتّب حقول النماذج عموديًا على الشاشات الصغيرة. تدعم جداول الملفات التمرير الأفقي، وتستخدم العربية اتجاهًا من اليمين إلى اليسار.
+
+### 10. حدود التصميم
+
+- الحد الأقصى للرفع 10 MB لكل ملف.
+- البحث بالمحتوى يدعم ملفات TXT وPDF النصية المملوكة للمستخدم.
+- الحد الأقصى للنص القابل للبحث 500,000 حرف مستخرج لكل ملف.
+- مهلة استخراج النص 20 ثانية.
+- التعديل يغيّر التصنيف وليس محتوى المستند.
+- لا يوجد OCR أو استعادة كلمة المرور أو فحص للبرمجيات الضارة.
+- عمليات الملفات وقاعدة البيانات ليست معاملة واحدة.
