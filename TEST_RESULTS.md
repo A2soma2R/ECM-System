@@ -8,6 +8,8 @@ This document records manual testing of the ECM System in a local development en
 
 Tests were performed using the browser, browser developer tools, and Postman. Results were confirmed through screenshots or the developer’s confirmation during testing.
 
+Earlier results and tests of the DOCX update are recorded separately. Earlier tests were not all repeated after the latest changes.
+
 These results cover the tested cases only. They do not guarantee that the application has no bugs.
 
 ### 2. Test Environment
@@ -17,10 +19,10 @@ These results cover the tested cases only. They do not guarantee that the applic
 - Frontend: HTML, CSS, and JavaScript.
 - Accounts: Administrator and employee accounts.
 - Sessions: Separate normal and private browser windows.
-- Test data: Temporary folders, TXT files, and text-based PDF files.
+- Test data: Temporary folders, TXT files, text-based PDF files, and DOCX documents.
 - Mobile layout: Browser device emulation.
 
-### 3. Authentication and Administration
+### 3. Earlier Authentication and Administration Tests
 
 | Test | Observed result | Status |
 | --- | --- | --- |
@@ -37,12 +39,12 @@ These results cover the tested cases only. They do not guarantee that the applic
 | Reactivate an employee account | Employee could sign in again | Passed |
 | Submit an object instead of an email string during registration | Invalid registration data was rejected | Passed |
 
-### 4. Files, Folders, and Search
+### 4. Earlier Files, Folders, and Search Tests
 
 | Test | Observed result | Status |
 | --- | --- | --- |
 | Create a folder | Folder appeared in the list | Passed |
-| Rename a folder | Updated name appeared during earlier testing | Passed |
+| Rename a folder | Updated name appeared | Passed |
 | Delete an empty folder | Folder was removed | Passed |
 | Delete a folder containing a file | Deletion was rejected and the folder remained | Passed |
 | Upload a supported TXT file | Upload succeeded and the file appeared | Passed |
@@ -59,7 +61,9 @@ These results cover the tested cases only. They do not guarantee that the applic
 
 The upload rejection tests above were performed through the application interface. Separate requests that bypass frontend validation were not tested for these cases.
 
-### 5. Sharing and Permissions
+The earlier TXT, PDF, and special-character search tests were not separately repeated after the latest search controller update.
+
+### 5. Earlier Sharing and Permission Tests
 
 | Test | Observed result | Status |
 | --- | --- | --- |
@@ -73,21 +77,40 @@ The upload rejection tests above were performed through the application interfac
 | Send a direct delete request as the recipient | Deletion was rejected and the owner’s file remained | Passed |
 | Send a direct download request after sharing was revoked | Download was rejected | Passed |
 
-Edit permission allows category changes. It does not allow editing the document’s contents.
+Edit permission allows category changes. It does not allow editing document contents.
 
-Revoking sharing prevents future access through the application. It does not remove copies that were already downloaded.
+Revoking sharing prevents future access through the application. It does not remove copies already downloaded.
 
-### 6. Interface
+### 6. Interface Tests
 
 | Test | Observed result | Status |
 | --- | --- | --- |
 | Switch between English and Arabic | Interface language changed successfully | Passed |
-| Switch between light and dark modes | Theme changed successfully | Passed |
-| Check the layout using mobile device emulation | Fields and buttons remained usable, and the file table could be scrolled horizontally | Passed |
+| Switch between light and dark modes | Theme changed successfully during earlier testing | Passed |
+| Check the layout using mobile device emulation | Fields and buttons remained usable, and the file table could be scrolled horizontally during earlier testing | Passed |
+| Display updated search help in English | Help text mentioned DOCX and case/whitespace handling | Passed |
+| Display updated search help in Arabic | Translated help text mentioned DOCX and case/whitespace handling | Passed |
+| Display DOCX content status | Uploaded DOCX files showed “Content searchable” in both languages | Passed |
 
-Mobile emulation does not replace testing on physical devices.
+The updated bilingual search help and DOCX status were confirmed through screenshots.
 
-### 7. Checks Not Performed
+Mobile emulation does not replace testing on physical devices. Theme and mobile layout tests were not separately repeated after the latest preferences update.
+
+### 7. DOCX, Search, and File Name Update
+
+The following manual checks were performed after adding Mammoth and updating text extraction, search matching, and uploaded file name handling.
+
+| Test | Observed result | Status |
+| --- | --- | --- |
+| Upload a new DOCX document | Document appeared and its content was marked searchable | Passed |
+| Search DOCX content with different letter case and no space | The developer confirmed that searching `wEeK22` matched the test text `Week 22` | Passed — developer confirmation |
+| Upload a TXT file with an Arabic name | The developer confirmed that the new name appeared correctly in the table | Passed — developer confirmation |
+
+The Arabic file name issue affected the displayed name. The developer confirmed that the downloaded TXT contents were already correct before the name-handling fix.
+
+These results do not establish support for every DOCX document structure or every file name encoding.
+
+### 8. Checks Not Performed
 
 The following checks remain unverified:
 
@@ -98,16 +121,26 @@ The following checks remain unverified:
 - Load testing and response-time measurement.
 - Concurrent file and folder operations.
 - A comprehensive security assessment.
+- Separately retesting TXT, PDF, and literal special-character searches after the latest search update.
+- Separately testing whitespace-insensitive file name search.
+- Retesting themes and mobile layout after the latest preferences update.
+- Reindexing older DOCX files previously marked as unsupported.
+- Repairing previously stored incorrect Arabic file names.
+- DOCX extraction failure and timeout cases, including corrupt or password-protected documents.
+- Behaviour at the 500,000-character extraction limit.
+- File name decoding across different clients and legacy encodings.
 
 The current project does not include an automated test suite.
 
-### 8. Test Cleanup and Conclusion
+### 9. Test Cleanup and Conclusion
 
-Temporary files and folders created for the final manual tests were deleted after testing.
+Temporary files and folders from the earlier final manual test session were deleted after testing. Cleanup of the later DOCX test documents has not been confirmed.
 
-The tested authentication, file management, search, sharing, administration, and interface scenarios behaved as expected.
+The earlier tested authentication, file management, search, sharing, administration, and interface scenarios behaved as expected.
 
-Untested cases should remain marked as unverified until they are executed. These results do not establish production readiness.
+The latest checks confirmed DOCX content extraction, the combined case/whitespace content search example, Arabic names for new uploads, and updated bilingual search help.
+
+Untested cases should remain unverified until they are executed. These results do not establish production readiness.
 
 ---
 
@@ -119,6 +152,8 @@ Untested cases should remain marked as unverified until they are executed. These
 
 نُفّذت الاختبارات باستخدام المتصفح وأدوات المطوّر وPostman. تم تأكيد النتائج من خلال الصور أو تأكيد المطوّر أثناء الاختبار.
 
+فُصلت النتائج السابقة عن اختبارات تحديث DOCX. لم تُعَد جميع الاختبارات السابقة بعد آخر التعديلات.
+
 تغطي النتائج الحالات التي جرى اختبارها فقط، ولا تعني خلو التطبيق من الأخطاء.
 
 ### 2. بيئة الاختبار
@@ -128,10 +163,10 @@ Untested cases should remain marked as unverified until they are executed. These
 - الواجهة: HTML وCSS وJavaScript.
 - الحسابات: حساب مسؤول وحساب موظف.
 - الجلسات: نافذة متصفح عادية وأخرى خاصة.
-- بيانات الاختبار: مجلدات مؤقتة وملفات TXT وPDF نصية.
+- بيانات الاختبار: مجلدات مؤقتة وملفات TXT وPDF نصية ومستندات DOCX.
 - عرض الجوال: محاكاة الأجهزة من أدوات المتصفح.
 
-### 3. تسجيل الدخول والإدارة
+### 3. اختبارات تسجيل الدخول والإدارة السابقة
 
 | الاختبار | النتيجة الفعلية | الحالة |
 | --- | --- | --- |
@@ -148,12 +183,12 @@ Untested cases should remain marked as unverified until they are executed. These
 | إعادة تفعيل حساب الموظف | استطاع الموظف تسجيل الدخول مجددًا | ناجح |
 | إرسال كائن بدلًا من نص البريد الإلكتروني عند التسجيل | تم رفض بيانات التسجيل غير الصحيحة | ناجح |
 
-### 4. الملفات والمجلدات والبحث
+### 4. اختبارات الملفات والمجلدات والبحث السابقة
 
 | الاختبار | النتيجة الفعلية | الحالة |
 | --- | --- | --- |
 | إنشاء مجلد | ظهر المجلد في القائمة | ناجح |
-| إعادة تسمية مجلد | ظهر الاسم الجديد خلال الاختبار السابق | ناجح |
+| إعادة تسمية مجلد | ظهر الاسم الجديد | ناجح |
 | حذف مجلد فارغ | تم حذف المجلد | ناجح |
 | حذف مجلد يحتوي على ملف | تم رفض الحذف وبقي المجلد موجودًا | ناجح |
 | رفع ملف TXT مدعوم | نجح الرفع وظهر الملف | ناجح |
@@ -170,7 +205,9 @@ Untested cases should remain marked as unverified until they are executed. These
 
 نُفّذت اختبارات رفض الرفع المذكورة أعلاه من خلال واجهة التطبيق. لم تُختبر هذه الحالات بطلبات منفصلة تتجاوز تحقق الواجهة.
 
-### 5. المشاركة والصلاحيات
+لم تُعَد اختبارات البحث داخل TXT وPDF والرموز الخاصة بشكل منفصل بعد آخر تعديل لوحدة البحث.
+
+### 5. اختبارات المشاركة والصلاحيات السابقة
 
 | الاختبار | النتيجة الفعلية | الحالة |
 | --- | --- | --- |
@@ -188,17 +225,36 @@ Untested cases should remain marked as unverified until they are executed. These
 
 يمنع إلغاء المشاركة الوصول اللاحق من خلال التطبيق، ولا يحذف النسخ التي سبق تنزيلها.
 
-### 6. الواجهة
+### 6. اختبارات الواجهة
 
 | الاختبار | النتيجة الفعلية | الحالة |
 | --- | --- | --- |
 | التبديل بين الإنجليزية والعربية | تغيّرت لغة الواجهة بنجاح | ناجح |
-| التبديل بين الوضع الفاتح والداكن | تغيّر المظهر بنجاح | ناجح |
-| فحص الصفحة بمحاكاة الجوال | بقيت الحقول والأزرار قابلة للاستخدام، وأمكن تمرير جدول الملفات أفقيًا | ناجح |
+| التبديل بين الوضع الفاتح والداكن | تغيّر المظهر خلال الاختبار السابق | ناجح |
+| فحص الصفحة بمحاكاة الجوال | بقيت الحقول والأزرار قابلة للاستخدام، وأمكن تمرير جدول الملفات أفقيًا خلال الاختبار السابق | ناجح |
+| عرض وصف البحث الجديد بالإنجليزية | ظهر دعم DOCX وتجاهل حجم الحروف والمسافات | ناجح |
+| عرض وصف البحث الجديد بالعربية | ظهر الوصف المترجم لدعم DOCX وتجاهل حجم الحروف والمسافات | ناجح |
+| عرض حالة محتوى DOCX | ظهرت المستندات المرفوعة قابلة للبحث باللغتين | ناجح |
 
-لا تغني محاكاة الجوال عن الاختبار على أجهزة فعلية.
+تم تأكيد وصف البحث المحدّث وحالة DOCX بالصور.
 
-### 7. فحوصات لم تُنفّذ
+لا تغني محاكاة الجوال عن الاختبار على أجهزة فعلية. لم تُعَد اختبارات المظهر وعرض الجوال بشكل منفصل بعد آخر تحديث لملف التفضيلات.
+
+### 7. تحديث DOCX والبحث وأسماء الملفات
+
+نُفّذت الفحوصات التالية بعد إضافة Mammoth وتحديث استخراج النص ومطابقة البحث ومعالجة أسماء الملفات.
+
+| الاختبار | النتيجة الفعلية | الحالة |
+| --- | --- | --- |
+| رفع مستند DOCX جديد | ظهر المستند وأصبحت حالة محتواه قابلة للبحث | ناجح |
+| البحث داخل DOCX باختلاف حجم الحروف وبدون مسافة | أكد المطوّر أن البحث عن `wEeK22` طابق النص التجريبي `Week 22` | ناجح — بتأكيد المطوّر |
+| رفع TXT باسم عربي | أكد المطوّر ظهور الاسم الجديد صحيحًا في الجدول | ناجح — بتأكيد المطوّر |
+
+كانت مشكلة الاسم العربي تخص الاسم المعروض. أكد المطوّر أن محتوى TXT المنزّل كان صحيحًا قبل إصلاح معالجة الاسم.
+
+لا تثبت هذه النتائج دعم جميع تراكيب مستندات DOCX أو جميع ترميزات أسماء الملفات.
+
+### 8. فحوصات لم تُنفّذ
 
 لم يتم التحقق من الفحوصات التالية:
 
@@ -209,13 +265,23 @@ Untested cases should remain marked as unverified until they are executed. These
 - اختبار الضغط وقياس زمن الاستجابة.
 - تنفيذ عمليات ملفات ومجلدات متزامنة.
 - إجراء تقييم أمني شامل.
+- إعادة اختبار البحث داخل TXT وPDF والرموز الحرفية بعد آخر تعديل للبحث.
+- اختبار تجاهل المسافات في اسم الملف بشكل منفصل.
+- إعادة اختبار المظهر وعرض الجوال بعد آخر تحديث للتفضيلات.
+- إعادة فهرسة ملفات DOCX القديمة المسجّلة كغير مدعومة.
+- تصحيح أسماء الملفات العربية المخزّنة سابقًا.
+- حالات فشل استخراج DOCX وانتهاء المهلة، بما فيها المستندات التالفة أو المحمية بكلمة مرور.
+- السلوك عند حد استخراج 500,000 حرف.
+- فك ترميز أسماء الملفات من عملاء مختلفين وترميزات قديمة.
 
 لا يحتوي المشروع الحالي على مجموعة اختبارات آلية.
 
-### 8. تنظيف بيانات الاختبار والخلاصة
+### 9. تنظيف بيانات الاختبار والخلاصة
 
-تم حذف الملفات والمجلدات المؤقتة التي أُنشئت للاختبارات اليدوية النهائية.
+تم حذف الملفات والمجلدات المؤقتة من جلسة الاختبار اليدوي النهائية السابقة. لم يُؤكد حذف مستندات اختبار DOCX اللاحقة.
 
-عملت حالات تسجيل الدخول وإدارة الملفات والبحث والمشاركة والإدارة والواجهة التي جرى اختبارها كما هو متوقع.
+عملت حالات تسجيل الدخول وإدارة الملفات والبحث والمشاركة والإدارة والواجهة التي اختُبرت سابقًا كما هو متوقع.
+
+أكدت الفحوصات الأخيرة استخراج محتوى DOCX، ومثال البحث الذي يجمع اختلاف حجم الحروف وتجاهل المسافات، وأسماء الملفات العربية في الرفع الجديد، ووصف البحث المحدّث باللغتين.
 
 تبقى الحالات غير المختبرة دون تحقق حتى تنفيذها. لا تثبت هذه النتائج جاهزية النظام للاستخدام الإنتاجي.

@@ -4,7 +4,7 @@
 
 ### 1. Sign In
 
-1. Open http://localhost:3000/login.html while the server is running.
+1. Open [http://localhost:3000/login.html](http://localhost:3000/login.html) while the server is running.
 2. Enter your registered email and password.
 3. Select **Sign in**.
 
@@ -35,6 +35,8 @@ Maximum file size: **10 MB**.
 
 Supported extensions: PDF, DOCX, XLSX, PPTX, TXT, PNG, JPG, and JPEG.
 
+New uploads support Arabic file names. Previously stored file names with incorrect characters are not automatically repaired.
+
 ### 5. Search for Files
 
 1. Enter your search text.
@@ -43,7 +45,42 @@ Supported extensions: PDF, DOCX, XLSX, PPTX, TXT, PNG, JPG, and JPEG.
 4. Select **Search**.
 5. Select **Clear** to remove the filters.
 
-Content search supports your own TXT and text-based PDF files. Scanned PDFs are not supported for content search. Up to 500,000 extracted characters per file are searchable.
+#### Search Behaviour
+
+File name and content searches ignore letter case and whitespace.
+
+For example, these searches match the same text:
+
+- `Week 22`
+- `week22`
+- `WeEk   22`
+
+Category and folder filters still narrow the results.
+
+#### Content Search Support
+
+Content search supports your own:
+
+- TXT files.
+- Word documents in `.docx` format.
+- Text-based PDF files.
+
+Up to **500,000 extracted characters** per file are searchable.
+
+Older Word `.doc` files are not supported. Scanned PDFs and images require OCR, which is not included. Other supported upload formats can still be found by file name.
+
+DOCX files uploaded before content search support was added may need reindexing. Ask the person maintaining the system to reindex them.
+
+#### Content Status
+
+The text below a file name indicates whether its content can be searched:
+
+- **Content searchable:** Text was extracted successfully.
+- **Content searchable: first 500,000 characters:** Only the first 500,000 extracted characters are searchable.
+- **No extractable text: search by name:** No searchable text was extracted.
+- **Content search not supported for this format:** Use file name search.
+- **Content indexing failed: search by name:** Text extraction failed.
+- **Content not indexed yet:** The file has not been indexed.
 
 ### 6. Manage Your Files
 
@@ -74,9 +111,11 @@ Removing access does not delete copies already downloaded by the recipient.
 
 ### 8. Shared With Me
 
-Open **Shared with me** to find documents shared with your account. Select **Refresh** to reload the list.
+Go to **Shared with me** to find documents shared with your account. Select **Refresh** to reload the list.
 
 Available actions depend on your permission. A shared file becomes unavailable if its owner is inactive or removes your access.
+
+The search controls in **My files** search your own files, not the shared-files list.
 
 ### 9. Administrator Dashboard
 
@@ -99,7 +138,9 @@ Select **Sign out** when finished, especially on a shared computer.
 - **Cannot sign in:** Check your email, password, and account status.
 - **No files found:** Clear the search filters and check the signed-in account.
 - **Upload failed:** Check the file size, extension, and selected folder.
-- **Content search has no result:** Check that the document is a supported text file or text-based PDF.
+- **Content search has no result:** Select **File content** or **File name and content**, check the content status, and confirm that the file is TXT, DOCX, or a text-based PDF.
+- **An old DOCX file is not searchable:** Ask the person maintaining the system to reindex the file.
+- **An old Arabic file name looks incorrect:** The upload correction does not repair previously stored names. Ask the person maintaining the system to review the name.
 - **Website unavailable:** Make sure the Node.js server and MongoDB are running.
 
 ---
@@ -108,7 +149,7 @@ Select **Sign out** when finished, especially on a shared computer.
 
 ### 1. تسجيل الدخول
 
-1. افتح http://localhost:3000/login.html أثناء تشغيل السيرفر.
+1. افتح [http://localhost:3000/login.html](http://localhost:3000/login.html) أثناء تشغيل السيرفر.
 2. أدخل البريد الإلكتروني المسجّل وكلمة المرور.
 3. اضغط **تسجيل الدخول**.
 
@@ -123,7 +164,7 @@ Select **Sign out** when finished, especially on a shared computer.
 ### 3. إدارة المجلدات
 
 - أدخل اسم المجلد واضغط **إنشاء مجلد**.
-- استخدم زر إعادة التسمية لتغيير اسم المجلد.
+- استخدم زر **إعادة تسمية** لتغيير اسم المجلد.
 - اضغط **حذف** لإزالة مجلد فارغ.
 
 لا يمكن حذف مجلد يحتوي ملفات. احذف ملفاته أولًا إذا لم تعد تحتاجها.
@@ -131,13 +172,15 @@ Select **Sign out** when finished, especially on a shared computer.
 ### 4. رفع ملف
 
 1. اختر المجلد.
-2. أدخل التصنيف، أو اتركه فارغًا لاستخدام التصنيف الافتراضي **عام**.
+2. أدخل التصنيف، أو اتركه فارغًا لاستخدام التصنيف الافتراضي **General**.
 3. اضغط **اختيار ملف** وحدّد المستند.
 4. اضغط **رفع الملف** وانتظر النتيجة.
 
 الحد الأقصى لحجم الملف: **10 MB**.
 
 الامتدادات المدعومة: PDF وDOCX وXLSX وPPTX وTXT وPNG وJPG وJPEG.
+
+يدعم الرفع الجديد أسماء الملفات العربية. الأسماء المخزّنة سابقًا التي تحتوي رموزًا غير صحيحة لا تُصلح تلقائيًا.
 
 ### 5. البحث عن الملفات
 
@@ -147,7 +190,42 @@ Select **Sign out** when finished, especially on a shared computer.
 4. اضغط **بحث**.
 5. اضغط **مسح** لإزالة الفلاتر.
 
-البحث بالمحتوى يدعم ملفات TXT وPDF النصية المملوكة لك. ملفات PDF المصوّرة غير مدعومة للبحث بالمحتوى. يمكن البحث في أول 500,000 حرف مستخرج من كل ملف.
+#### طريقة البحث
+
+يتجاهل البحث باسم الملف ومحتواه حجم الحروف والمسافات.
+
+مثلًا، تطابق عمليات البحث التالية النص نفسه:
+
+- `Week 22`
+- `week22`
+- `WeEk   22`
+
+تبقى فلاتر التصنيف والمجلد مستخدمة لتضييق النتائج.
+
+#### الصيغ المدعومة للبحث بالمحتوى
+
+يدعم البحث بالمحتوى ملفاتك المملوكة من الصيغ التالية:
+
+- ملفات TXT.
+- مستندات Word بصيغة `.docx`.
+- ملفات PDF النصية.
+
+يمكن البحث في أول **500,000 حرف مستخرج** من كل ملف.
+
+صيغة Word القديمة `.doc` غير مدعومة. ملفات PDF المصوّرة والصور تحتاج OCR، وهو غير متوفر حاليًا. يمكن العثور على صيغ الرفع الأخرى باسم الملف.
+
+قد تحتاج ملفات DOCX المرفوعة قبل إضافة دعم البحث داخلها إلى إعادة الفهرسة. اطلب ذلك من الشخص المسؤول عن صيانة النظام.
+
+#### حالة المحتوى
+
+يوضح النص أسفل اسم الملف إمكانية البحث داخل محتواه:
+
+- **يمكن البحث داخل المحتوى:** تم استخراج النص بنجاح.
+- **يمكن البحث في أول 500,000 حرف من المحتوى:** البحث متاح في أول 500,000 حرف مستخرج فقط.
+- **لا يوجد نص قابل للاستخراج: ابحث باسم الملف:** لم يُستخرج نص قابل للبحث.
+- **البحث داخل المحتوى غير مدعوم لهذه الصيغة:** استخدم البحث باسم الملف.
+- **تعذّرت فهرسة المحتوى: ابحث باسم الملف:** فشل استخراج النص.
+- **لم تتم فهرسة المحتوى بعد:** لم يُفهرس الملف بعد.
 
 ### 6. إدارة ملفاتك
 
@@ -182,6 +260,8 @@ Select **Sign out** when finished, especially on a shared computer.
 
 الإجراءات المتاحة تعتمد على صلاحيتك. يصبح الملف المشارَك غير متاح إذا تعطّل حساب مالكه أو ألغى وصولك.
 
+خيارات البحث في **ملفاتي** تبحث في ملفاتك المملوكة، وليس في قائمة الملفات المشتركة معك.
+
 ### 9. لوحة تحكم المسؤول
 
 يمكن لحساب المسؤول فتح **لوحة تحكم المسؤول** من صفحة ملفاتي.
@@ -203,5 +283,7 @@ Select **Sign out** when finished, especially on a shared computer.
 - **تعذّر تسجيل الدخول:** تحقق من البريد وكلمة المرور وحالة الحساب.
 - **لا توجد نتائج:** امسح فلاتر البحث وتحقق من الحساب المستخدم.
 - **فشل الرفع:** تحقق من حجم الملف وامتداده والمجلد المختار.
-- **لا توجد نتيجة في المحتوى:** تأكد أن المستند ملف نصي مدعوم أو PDF نصي.
+- **لا توجد نتيجة في المحتوى:** اختر **محتوى الملف** أو **اسم الملف والمحتوى**، وتحقق من حالة المحتوى، وأن الصيغة TXT أو DOCX أو PDF نصي.
+- **ملف DOCX قديم غير قابل للبحث:** اطلب من المسؤول عن صيانة النظام إعادة فهرسته.
+- **اسم ملف عربي قديم يظهر برموز:** تصحيح الرفع لا يصلح الأسماء المخزّنة سابقًا. اطلب من المسؤول عن صيانة النظام مراجعة الاسم.
 - **الموقع غير متاح:** تأكد من تشغيل سيرفر Node.js وقاعدة MongoDB.

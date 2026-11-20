@@ -14,7 +14,10 @@ ECM helps employees store, organize, search, and share digital documents. Admini
 | Authentication | Email and password login with JWT |
 | Folder management | Create, rename, and delete empty owned folders |
 | File management | Upload, download, categorize, and delete owned files |
-| Search | File name and supported document content, with folder and category filters |
+| Search | File names and supported content, ignoring letter case and whitespace |
+| Content extraction | TXT, Word DOCX, and text-based PDF |
+| Search filters | Folder and category |
+| File names | Arabic file name correction for new uploads |
 | Sharing | Share with registered active users and revoke access |
 | Permissions | Owner, view recipient, and edit recipient |
 | Administration | Statistics and employee activation controls |
@@ -43,7 +46,9 @@ flowchart TD
     E --> D
 ```
 
-The browser displays the interface. The API validates requests and checks permissions. MongoDB stores records, while the uploads directory stores document bytes. The worker extracts supported document text.
+The browser displays the interface. The API validates requests and checks permissions. MongoDB stores records, while the uploads directory stores document bytes.
+
+The worker extracts TXT text using TextDecoder, PDF text using pdf-parse, and DOCX text using Mammoth. Extracted text and indexing status are saved with the file record.
 
 ### 5. Database Design
 
@@ -93,7 +98,9 @@ erDiagram
 
 SHARE represents entries embedded in the File document's `sharedWith` array. It is not a separate collection.
 
-The password field stores a hash. User, Folder, and File records also have creation and update timestamps. Extracted content is excluded from ordinary file queries.
+The password field stores a hash. User, Folder, and File records also have creation and update timestamps. Extracted content is excluded from ordinary file query results.
+
+The original display name is separate from the generated storage name.
 
 ### 6. Login Workflow
 
@@ -111,19 +118,38 @@ flowchart TD
 
 Protected API requests check the token and current database account. Administrator routes also check the user's role.
 
-### 7. Upload Workflow
+### 7. Upload and Search Workflow
+
+#### Upload
 
 ```mermaid
 flowchart TD
-    A["Choose folder and file"] --> B["Check login and upload limits"]
+    A["Choose folder and file"] --> B["Check login, file name encoding, and upload limits"]
     B --> C{"Folder owned and input valid?"}
     C -->|No| D["Reject and clean unused upload"]
-    C -->|Yes| E["Extract supported text in worker"]
+    C -->|Yes| E["Extract TXT, PDF, or DOCX text in worker"]
     E --> F["Save metadata and indexing status"]
     F --> G["Display file in My files"]
 ```
 
 If text extraction fails, an otherwise valid upload can still be saved and found by file name.
+
+New uploads attempt to correct UTF-8 file names received as Latin-1. Previously stored incorrect names are not automatically repaired.
+
+#### Search
+
+- Search is restricted to the signed-in user's owned files.
+- Users can search file names, extracted content, or both.
+- The query is normalized using NFKC.
+- Query whitespace is removed, and matching allows whitespace between characters.
+- Letter case is ignored.
+- Regular expression symbols in the query are treated literally.
+- Category and folder filters can narrow the results.
+- Category filtering remains an exact, case-insensitive match.
+
+For example, `Week 22`, `week22`, and `WeEk   22` match the same text.
+
+Older DOCX files previously marked as unsupported may need reindexing before content search can find them.
 
 ### 8. Sharing Workflow
 
@@ -139,6 +165,8 @@ flowchart TD
 
 The owner can update or remove sharing. Revoking access prevents future authorized downloads but does not remove previously downloaded copies.
 
+The search controls in My files do not search the shared-files list.
+
 ### 9. Interface Design
 
 | Screen | Main elements |
@@ -151,15 +179,21 @@ The owner can update or remove sharing. Revoking access prevents future authoriz
 
 Forms stack vertically on smaller screens. File tables support horizontal scrolling. Arabic uses right-to-left layout.
 
+The search help text describes DOCX support, case-insensitive matching, whitespace handling, and the extraction limit in both languages.
+
 ### 10. Design Limits
 
 - Upload size is limited to 10 MB per file.
-- Content search supports owned TXT and text-based PDF files.
+- Content search supports owned TXT, DOCX, and text-based PDF files.
+- The older Word `.doc` format is not supported.
 - Searchable extracted content is limited to 500,000 characters per file.
 - Text extraction has a 20-second timeout.
+- The worker has a 256 MB old-generation JavaScript heap limit; this is not a limit on all process memory.
 - Edit permission changes categories, not document contents.
 - OCR, password recovery, and malware scanning are not included.
+- Previously stored incorrect file names require separate correction.
 - File-system operations and database operations are not one transaction.
+- Search performance on large datasets has not been established.
 
 ---
 
@@ -177,7 +211,10 @@ Forms stack vertically on smaller screens. File tables support horizontal scroll
 | المصادقة | الدخول بالبريد وكلمة المرور باستخدام JWT |
 | إدارة المجلدات | إنشاء المجلدات المملوكة وتغيير أسمائها وحذف الفارغ منها |
 | إدارة الملفات | رفع الملفات المملوكة وتنزيلها وتصنيفها وحذفها |
-| البحث | الاسم والمحتوى المدعوم مع فلاتر المجلد والتصنيف |
+| البحث | الاسم والمحتوى المدعوم مع تجاهل حجم الحروف والمسافات |
+| استخراج المحتوى | TXT وWord بصيغة DOCX وPDF النصي |
+| فلاتر البحث | المجلد والتصنيف |
+| أسماء الملفات | تصحيح أسماء الملفات العربية عند الرفع الجديد |
 | المشاركة | المشاركة مع مستخدم مسجّل ونشط وإلغاء وصوله |
 | الصلاحيات | مالك ومستلم بصلاحية عرض أو تعديل |
 | الإدارة | الإحصائيات وتفعيل حسابات الموظفين وتعطيلها |
@@ -202,8 +239,10 @@ Forms stack vertically on smaller screens. File tables support horizontal scroll
 - المتصفح يعرض الواجهة باستخدام HTML وCSS وJavaScript.
 - Express يستقبل الطلبات ويتحقق من البيانات والصلاحيات.
 - MongoDB تحفظ الحسابات والمجلدات وبيانات الملفات والمشاركة.
-- مجلد uploads يحفظ المستندات نفسها خارج ملفات الواجهة العامة.
+- مجلد `uploads` يحفظ المستندات خارج مجلد الواجهة العامة.
 - عامل منفصل يستخرج النص من المستندات المدعومة.
+
+يستخدم العامل TextDecoder لملفات TXT، ومكتبة pdf-parse لملفات PDF، ومكتبة Mammoth لملفات DOCX. يُحفظ النص المستخرج وحالة الفهرسة مع سجل الملف.
 
 ### 5. تصميم قاعدة البيانات
 
@@ -224,7 +263,9 @@ Forms stack vertically on smaller screens. File tables support horizontal scroll
 
 المشاركات محفوظة داخل مصفوفة `sharedWith` في سجل الملف، وليست مجموعة مستقلة.
 
-تحتوي النماذج الرئيسية أيضًا على تاريخ الإنشاء والتعديل. يُستبعد النص المستخرج من الاستعلامات العادية.
+تحتوي النماذج الرئيسية أيضًا على تاريخ الإنشاء والتعديل. يُستبعد النص المستخرج من نتائج الاستعلامات العادية.
+
+الاسم الأصلي المعروض منفصل عن اسم التخزين المولّد.
 
 ### 6. سير تسجيل الدخول
 
@@ -237,16 +278,35 @@ Forms stack vertically on smaller screens. File tables support horizontal scroll
 
 الطلبات المحمية تتحقق من التوكن والحساب الحالي في قاعدة البيانات. مسارات المسؤول تتحقق من الدور أيضًا.
 
-### 7. سير رفع الملف
+### 7. سير الرفع والبحث
+
+#### رفع الملف
 
 1. يختار المستخدم المجلد والملف.
-2. يتحقق السيرفر من الدخول وحدود الرفع.
+2. يتحقق السيرفر من الدخول وترميز الاسم وحدود الرفع.
 3. يتحقق من ملكية المجلد وصحة البيانات.
-4. يستخرج العامل النص إذا كان نوع الملف مدعومًا.
+4. يستخرج العامل النص من TXT أو PDF أو DOCX إذا كان مدعومًا.
 5. تُحفظ بيانات الملف وحالة الفهرسة.
 6. يظهر الملف في صفحة ملفاتي.
 
 إذا فشل استخراج النص، يمكن حفظ الملف الصالح والبحث عنه باسمه.
+
+يحاول الرفع الجديد تصحيح أسماء UTF-8 المستقبلة بترميز Latin-1. لا تُصلح الأسماء القديمة المخزّنة تلقائيًا.
+
+#### البحث
+
+- البحث محصور في الملفات المملوكة للمستخدم المسجّل دخوله.
+- يمكن البحث باسم الملف أو النص المستخرج أو كليهما.
+- يُوحّد الاستعلام باستخدام NFKC.
+- تُحذف مسافات الاستعلام، وتسمح المطابقة بوجود مسافات بين الأحرف.
+- يُتجاهل حجم الحروف.
+- تُعامل رموز التعبيرات النمطية في الاستعلام كنص حرفي.
+- يمكن تضييق النتائج بفلاتر التصنيف والمجلد.
+- يبقى فلتر التصنيف مطابقًا تمامًا مع تجاهل حجم الحروف.
+
+مثلًا، تطابق `Week 22` و`week22` و`WeEk   22` النص نفسه.
+
+قد تحتاج ملفات DOCX القديمة المسجّلة سابقًا كغير مدعومة إلى إعادة الفهرسة قبل البحث داخلها.
 
 ### 8. سير المشاركة
 
@@ -258,6 +318,8 @@ Forms stack vertically on smaller screens. File tables support horizontal scroll
 6. يتحقق السيرفر من الوصول عند تنفيذ الإجراءات.
 
 يستطيع المالك تغيير الصلاحية أو إلغاء المشاركة. إلغاء الوصول لا يحذف النسخ التي سبق تنزيلها.
+
+خيارات البحث في ملفاتي لا تبحث في قائمة الملفات المشتركة مع المستخدم.
 
 ### 9. تصميم الواجهات
 
@@ -271,12 +333,18 @@ Forms stack vertically on smaller screens. File tables support horizontal scroll
 
 تُرتّب حقول النماذج عموديًا على الشاشات الصغيرة. تدعم جداول الملفات التمرير الأفقي، وتستخدم العربية اتجاهًا من اليمين إلى اليسار.
 
+يوضح وصف البحث دعم DOCX وتجاهل حجم الحروف والمسافات وحد الاستخراج باللغتين.
+
 ### 10. حدود التصميم
 
 - الحد الأقصى للرفع 10 MB لكل ملف.
-- البحث بالمحتوى يدعم ملفات TXT وPDF النصية المملوكة للمستخدم.
+- البحث بالمحتوى يدعم ملفات TXT وDOCX وPDF النصية المملوكة للمستخدم.
+- صيغة Word القديمة `.doc` غير مدعومة.
 - الحد الأقصى للنص القابل للبحث 500,000 حرف مستخرج لكل ملف.
 - مهلة استخراج النص 20 ثانية.
+- حد ذاكرة JavaScript من نوع old generation للعامل 256 MB، وليس حدًا لجميع ذاكرة العملية.
 - التعديل يغيّر التصنيف وليس محتوى المستند.
 - لا يوجد OCR أو استعادة كلمة المرور أو فحص للبرمجيات الضارة.
+- الأسماء القديمة غير الصحيحة تحتاج تصحيحًا منفصلًا.
 - عمليات الملفات وقاعدة البيانات ليست معاملة واحدة.
+- لم يُثبت أداء البحث على مجموعات بيانات كبيرة.
