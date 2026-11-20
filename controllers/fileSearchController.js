@@ -9,6 +9,18 @@ const escapeRegex = (text) => {
   return text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 };
 
+// ===== Build Search Pattern Without Whitespace =====
+const buildSearchPattern = (text) => {
+  const compactText = text
+    .normalize("NFKC")
+    .replace(/\s+/gu, "");
+
+  // Allow whitespace between characters while treating symbols literally.
+  return Array.from(compactText)
+    .map((character) => escapeRegex(character))
+    .join("\\s*");
+};
+
 // ===== Search Owned Files =====
 const searchFiles = async (req, res) => {
   try {
@@ -52,30 +64,24 @@ const searchFiles = async (req, res) => {
 
     // ===== Search Name or Content =====
     if (search?.trim()) {
-      const nameMatch = {
-        $regex: escapeRegex(search.trim()),
-        $options: "i",
-      };
+      const pattern = buildSearchPattern(search);
 
-      const contentQuery = search
-        .normalize("NFKC")
-        .replace(/\s+/gu, " ")
-        .trim();
+      if (pattern) {
+        const match = {
+          $regex: pattern,
+          $options: "i",
+        };
 
-      const contentMatch = {
-        $regex: escapeRegex(contentQuery),
-        $options: "i",
-      };
-
-      if (scope === "name") {
-        filter.originalName = nameMatch;
-      } else if (scope === "content") {
-        filter.contentText = contentMatch;
-      } else {
-        filter.$or = [
-          { originalName: nameMatch },
-          { contentText: contentMatch },
-        ];
+        if (scope === "name") {
+          filter.originalName = match;
+        } else if (scope === "content") {
+          filter.contentText = match;
+        } else {
+          filter.$or = [
+            { originalName: match },
+            { contentText: match },
+          ];
+        }
       }
     }
 
