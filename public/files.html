@@ -181,7 +181,11 @@
           <!-- ===== Search Scope ===== -->
           <div class="form-group">
             <label for="searchScope">Search in</label>
-            <select id="searchScope" name="scope" aria-describedby="contentSearchHelp">
+            <select
+              id="searchScope"
+              name="scope"
+              aria-describedby="contentSearchHelp"
+            >
               <option value="name">File name</option>
               <option value="content">File content</option>
               <option value="all">File name and content</option>
@@ -221,8 +225,10 @@
           </div>
         </form>
 
+        <!-- ===== Content Search Help ===== -->
         <p id="contentSearchHelp" class="section-description content-search-help">
-          Content search supports TXT and text-based PDF files in My files.
+          Content search supports TXT, Word (DOCX), and text-based PDF files in My files.
+          File name and content searches ignore letter case and whitespace.
           Scanned PDFs and other formats can still be found by file name.
           Up to 500,000 extracted characters per file are searchable.
         </p>
